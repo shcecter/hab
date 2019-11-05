@@ -13,7 +13,11 @@ def render_figures(filename):
     plt.show()
 
 
-    
+'''
+Функции для считывания и преобразования исходных данных
+'''
+
+
 def read_data(filename):
     data = pd.read_csv(filename, sep=';', decimal='.')
     return data
@@ -59,6 +63,22 @@ def get_time(data):
     return time.values
 
 
+def create_curves(filename):
+    hip_segs_l = ['Spine', 'Hip', 'Knee']
+    knee_segs_l = ['Hip', 'Knee', 'Ankle']
+    data = read_data(filename)
+    time = get_time(data)
+    hip = get_joints(data, hip_segs_l)
+    knee = get_joints(data, knee_segs_l)
+    spine_z = data['Spine_Y [cm]'].values
+    return {'time': time, 'hip': hip, 'knee': knee, 'spine': spine_z}
+
+
+'''
+Функции для редактирования исходных данных
+'''
+
+
 def get_nearest(arr, value):
     """
     Returns: index of value in array that is nearest to value
@@ -77,12 +97,30 @@ def cut_data(data, first=0, last=None):
     return data[i:k]
 
 
+def cut_outpoint(filename):
+    '''
+    under heavy development
+    '''
+    data = read_data(filename)
+    pass
+
+
+'''
+Подготовка графиков
+'''
+
+
 def get_plot_size(num_timesteps):
     width = num_timesteps / 35
     return width
 
 
-def graph(time, hip, knee, spine_z, spine_z_f=False, phase_f=True):
+def plot_data(filename, spine_z_f=False, phase_f=True, autoout=False):
+    curves = create_curves(filename)
+    time = curves['time']
+    hip = curves['hip']
+    knee = curves['knee']
+    spine_z = curves['spine']
     lhip, rhip = hip
     lknee, rknee = knee
     if spine_z_f:
@@ -117,21 +155,6 @@ def graph(time, hip, knee, spine_z, spine_z_f=False, phase_f=True):
         plt.plot(lknee, lhip, 'b', label='left')
         plt.plot(rknee, rhip, 'r', label='right')
         plt.legend()
-
-
-
-
-
-
-def plot_data(filename):
-    hip_segs_l = ['Spine', 'Hip', 'Knee']
-    knee_segs_l = ['Hip', 'Knee', 'Ankle']
-    data = read_data(filename)
-    time = get_time(data)
-    hip = get_joints(data, hip_segs_l)
-    knee = get_joints(data, knee_segs_l)
-    spine_z = data['Spine_Y [cm]'].values
-    graph(time, hip, knee, spine_z)
 
 
 if __name__ == '__main__':
