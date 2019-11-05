@@ -88,6 +88,9 @@ def get_nearest(arr, value):
 
 
 def cut_data(data, first=0, last=None):
+    '''
+    Функция для обрезания данных по значениям амплитуд
+    '''
     time = get_time(data)
     if last is None:
         last = len(time)
@@ -114,7 +117,7 @@ def get_plot_size(num_timesteps):
     return width
 
 
-def plot_data(filename, spine_z_f=False, phase_f=True, autoout=False):
+def plot_data(filename, spine_z_f=False, phase_f=True, autoout=True):
     data = read_data(filename)
     curves = create_curves(data)
     time = curves['time']
@@ -128,9 +131,17 @@ def plot_data(filename, spine_z_f=False, phase_f=True, autoout=False):
             lidx = get_nearest(lknee, 60)
             ridx = get_nearest(rknee, 60)
             earl = lidx if lidx < ridx else ridx
-            pass
-
-
+            cutted_data = data[0:earl]
+            curves = create_curves(cutted_data)
+            time = curves['time']
+            hip = curves['hip']
+            knee = curves['knee']
+            spine_z = curves['spine']
+            lhip, rhip = hip
+            lknee, rknee = knee
+            click.echo('Here goes with cutting outlying points....')
+        else:
+            click.echo('there is nothing to cut! No outlying points in this data.')
     if spine_z_f:
         fig, (ahip, aknee, aspine) = plt.subplots(3, 1)
         fig.set_size_inches(get_plot_size(time.shape[0]), 6)
