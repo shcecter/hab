@@ -19,7 +19,7 @@ def render_figures(filename):
 
 
 def read_data(filename):
-    data = pd.read_csv(filename, sep=';', decimal='.')
+    data = pd.read_csv(filename, sep=';', decimal='.', engine='python')
     return data
 
 
